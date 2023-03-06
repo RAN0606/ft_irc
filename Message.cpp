@@ -6,36 +6,42 @@
 /*   By: rliu <rliu@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/03 18:27:53 by rliu              #+#    #+#             */
-/*   Updated: 2023/03/03 19:02:37 by rliu             ###   ########.fr       */
+/*   Updated: 2023/03/06 17:15:09 by rliu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Message.hpp"
-#include <string>
-#include <iostream>
-#include <vector>
 
-Message::Message(std::string message):_message(message){}
+
+//save recv message
 Message::Message(void){}
-Message::Message(void){}
-void Message::setToken(){
-    vector<string>     lines;
-    std::string delimiter = "\n";
-    std::string parsed;
-    std::stringstream input_stringstream(_message);
-    while(getline(input_stringstream,parsed, '\n'))
-        lines.push_back(parsed);
-    for(std::vector<string>::iterator itb=lines.begin(); itb!=lines.end(); itb++)
-        {
-            input_stringstream.str(*itb);
-            while(getline(input_stringstream,parsed, ' '))
-                _tokens.push_back(parsed);
-        }
+
+Message::Message(std::string message):_message(message){
+    setLines_tokens();
 }
-    std::string Message::getNick(){
-            std::vector<string> itf = find (_tokens.begin(), _tokens.end(), 30);
-            if (itf != _tokens.end() && (itf+1)  != _tokens.end());
+
+Message::~Message(void){}
+
+//getline save in the lines;
+// void setMessage(std::stirng message){
+//     _message = message;
+// }
+void Message::setLines_tokens(){
+    
+    
+    // Takes only space separated C++ strings.
+    std::stringstream ss(_message);  
+    std::string word;
+    while (ss >> word) { // Extract word from the stream.
+       _tokens.push_back(word);
+    }
+}
+
+std::string Message::command_Nick(){
+            std::vector<std::string>::iterator itf = find(_tokens.begin(),_tokens.end(), "NICK");
+            if (itf != _tokens.end() && (itf+1)  != _tokens.end())
             _nick = *(itf+1);
             return (_nick);            
     }
+    
         
