@@ -3,36 +3,52 @@
 /*                                                        :::      ::::::::   */
 /*   Message.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rliu <rliu@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: guillemette.duchateau <guillemette.duch    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/03/03 18:18:42 by rliu              #+#    #+#             */
-/*   Updated: 2023/03/06 17:01:28 by rliu             ###   ########.fr       */
+/*   Created: 2023/03/23 18:13:57 by guillemette       #+#    #+#             */
+/*   Updated: 2023/04/06 18:27:26 by guillemette      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-
-
 #ifndef MESSAGE_HPP
 # define MESSAGE_HPP
-# include "Client.hpp"
-# include <vector>
-# include <string>
-#include <iostream>
-# include <algorithm>
 
-class Message{
-    public:
-        Message(std::string message);
-        Message(void);
-        ~Message(void);
-        void setLines_tokens();
-        //std::string getNick();
-        std::string command_Nick();
-        
-        
-        std::string                 _message;
-        std::vector<std::string>     _lines;  
-        std::string                 _nick; //tmp
-        std::vector<std::string>     _tokens;
+# include <iostream>
+# include <vector>
+# include <map>
+# include "Server.hpp"
+# include "Client.hpp"
+
+
+class Server;
+class Client;
+class Message
+{
+	public:
+		// CONSTRUCTOR / DESTRUCTOR
+		// Message(void);
+		Message(std::vector<std::string> &tokens, Client *client, Server *server, std::string fullMsg);
+		~Message(void);
+
+		// GETTERS
+		std::string					getFullMsg(void) const;
+		std::string 				getCMD(void) const;
+		std::vector<std::string>	getParams(void) const;
+		Server*						getServer(void) const;
+		Client*						getClient(void) const;
+		std::vector<std::string>	getTargets(void) const;
+
+		// METHODS
+		void						execCmd();
+		void						setTargets(std::string msgtarget);
+	private:
+		std::string					_fullMsg;
+		std::string					_prefix;
+		std::string					_cmd;
+		std::vector<std::string>	_params;
+		Client*						_client;
+		Server*						_server;
+		std::vector<std::string>	_targets;
 };
+
 #endif

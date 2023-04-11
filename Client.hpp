@@ -1,44 +1,81 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Client.hpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rliu <rliu@student.42.fr>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/03/23 18:12:51 by guillemette       #+#    #+#             */
+/*   Updated: 2023/04/11 17:02:44 by rliu             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef CLIENT_H
 # define CLIENT_H
 
-# include <unistd.h>
-# include <string.h>
-# include <stdlib.h>
-# include <stdio.h>
-# include <netdb.h>
-# include <poll.h>
-# include <sys/types.h>
-# include <sys/socket.h>
-# include <arpa/inet.h>
-# include <string>
 # include <iostream>
-# include <vector>
-# include "Server.hpp"
+# include <netdb.h>
+# include <string.h>
 
 class Client {
 
-    public :
-        
-        Client(int fd_size);
-        Client(const Client& src);
-        ~Client(void);
+	public :
+		// CONSTRUCTOR / DESTRUCTOR
+		Client(void);
+		~Client(void);
 
-        int     getSocket(void) const;
-        pollfd  getPfd(int i) const;
-        void    fillpfds(Server *server);
-        int     _poll(void);
-        void    _accept(Server *server, int *fd_count, int *fd_size);
-        void    del_from_pfds(int i, int *fd_count);
+		// GETTERS
+		int			getSocket(void) const;
+		std::string getPass(void) const;
+		std::string	getNick(void) const;
+		std::string	getUser(void) const;
+		std::string	getPrefix(void) const;
+        std::string getIRCMode(void) const;
+        std::string getHostName(void) const;
+		std::string getRealName(void) const;
+		bool		getRegistrationStatus (void) const;
+		bool		getNickStatus (void) const;
+		bool		getUsrStatus (void) const;
+		bool		getPassStatus (void) const;
 
-    private :
+		// SETTERS
+		void		setSocket(int socket);
+		void		setNick(std::string &nickname);
+		void		setUsr(std::string &usrname);
+		void		setPass(std::string &pass);
+		void		setHostname(std::string &hostname);
+		void		setAsRegistered(void);
+		void		setPrefix(void);
+        void        setIRCMode(std::string mode);
+		void		setRealname(std::string &realname);
+		void		setNickRegisted(void);
+		void		setUsrRegisted(void);
+		void		setPassRegisted(void);
+		
+		sockaddr_in _sockaddr;
+		socklen_t   _socklen;
 
-        // int         _port;
-        int         _socket;
-        char        _host[NI_MAXHOST];
-        std::string _nick;
-        sockaddr_in _sockaddr;
-        socklen_t   _socklen;
-        std::vector<struct pollfd>  _pfds;
+	private :
+		std::string	_password;
+		int			_socket;
+		char		_host[NI_MAXHOST];
+		bool		_isRegistered;
+		std::string	_prefix;
+		std::string	_hostname;
+		std::string	_user;
+		std::string	_nick;
+		std::string	_pass;
+		std::string	_msgWelcome;
+		std::string _irc_mode;
+		std::string _realname;
+		bool		_nickRegisted;
+		bool		_usrRegisted;
+		bool		_passRegisted;
 };
+
+// irc mode (user mode)
+// i: When enabled, other users will not be able to see you on a WHO output unless they are in the channel themselves.
+// w: When enabled, you will receive WALLOP messages from IRC operators.
+// s: When enabled, you will receive special notices or debug messages from the server.
 
 #endif

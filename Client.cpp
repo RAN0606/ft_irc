@@ -1,64 +1,124 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Client.cpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rliu <rliu@student.42.fr>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/03/23 18:12:21 by guillemette       #+#    #+#             */
+/*   Updated: 2023/04/11 17:07:09 by rliu             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "Client.hpp"
 
-Client::Client(int fd_size) {
+/*
+** ------------------------------- CONSTRUCTOR --------------------------------
+*/
 
-    memset(this->_host, 0, NI_MAXHOST);
-    this->_pfds = std::vector<pollfd>(fd_size);
-    this->_socklen = sizeof(this->_sockaddr);
+Client::Client(void) : _isRegistered(false), _nickRegisted(false), _usrRegisted(false), _passRegisted(false) {
+// TO DO: Change memset to a c++ method/func
+	memset(this->_host, 0, NI_MAXHOST);
+	this->_socklen = sizeof(this->_sockaddr);
 }
+
+/*
+** -------------------------------- DESTRUCTOR --------------------------------
+*/
 
 Client::~Client(void) {}
 
-Client::Client(const Client& src) { *this = src; }
 
-int Client::getSocket(void) const {
+/*
+** --------------------------------- METHODS ----------------------------------
+*/
 
-    return (this->_socket);
-}
 
-pollfd Client::getPfd(int i) const {
+/*
+** --------------------------------- GETTERS ----------------------------------
+*/
 
-    return (this->_pfds[i]);
-}
+int			Client::getSocket(void) const{return (this->_socket);}
 
-void    Client::fillpfds(Server *server) {
+std::string	Client::getPass(void) const{return (this->_pass);}
 
-    this->_pfds[0].fd = server->getSocket();
-    this->_pfds[0].events = POLLIN;
-}
+std::string	Client::getNick(void) const{return (this->_nick);}
 
-int Client::_poll(void) {
+std::string	Client::getUser(void) const {return (this->_user);}
 
-    return (poll(&this->_pfds[0], this->_pfds.size(), -1));
-}
+std::string Client::getIRCMode(void) const {return (this->_irc_mode);}
 
-void    add_to_pfds(std::vector<pollfd> *pfds, int newfd, int *fd_count, int *fd_size)
+std::string Client::getHostName(void) const {return (this->_hostname);}
+
+bool		Client::getRegistrationStatus(void) const {return (this->_isRegistered);}
+
+std::string	Client::getPrefix(void) const {return (this->_prefix);}
+
+std::string Client::getRealName(void) const {return (this->_realname);}
+
+bool		Client::getNickStatus (void) const{return (this->_nickRegisted);}
+bool		Client::getUsrStatus (void) const{return (this->_usrRegisted);}
+bool		Client::getPassStatus (void) const{return (this->_passRegisted);}
+
+/*
+** --------------------------------- SETTERS ----------------------------------
+*/
+
+void Client::setSocket(int socket)
 {
-    // If we don't have room, add more space in the pfds array
-    if (*fd_count == *fd_size) {
-        *fd_size *= 2;
-        pfds->resize(*fd_size);
-    }
-    (*pfds)[*fd_count].fd = newfd;
-    (*pfds)[*fd_count].events = POLLIN;
-    (*fd_count)++;
+	this->_socket = socket;
 }
 
-void    Client::_accept(Server *server, int *fd_count, int *fd_size) {
+void  Client::setPrefix(void)
+{
+		_prefix = _nick + "!" + _user + "@" + _hostname;
+//      _msgWelcome = ":" + _prefix + " 001 " + _nick + " :Welcome to the IRC__ Network, " + _prefix + "\n";
+	   std::cout << "test_setprefic: "<<_prefix << std::endl;
+ }
 
-    this->_socket = accept(server->getSocket(), (sockaddr *)&this->_sockaddr, &this->_socklen);
-    send(this->getSocket(), ":server 001 <nick> :Welcome to the <network> Network, <nick>[!<user>@<host>]\n", 78, 0);
-    if (this->getSocket() == -1)
-        perror("accept");
-    else
-    {
-        add_to_pfds(&this->_pfds, this->_socket, fd_count, fd_size);
-        std::cout << "pollserver: new connection from " << this->_host << " on socket " << this->_socket << std::endl;
-    }
+void  Client::setNick(std::string &nickname)
+{
+	_nick = nickname;
 }
 
-void    Client::del_from_pfds(int i, int *fd_count) {
-    
-    this->_pfds[i] = this->_pfds[*fd_count - 1];
-    (*fd_count)--;
+void  Client::setAsRegistered(void){
+    _isRegistered = true;
+    this->setIRCMode("wi");
+}
+
+void		Client::setNickRegisted(void){
+	_nickRegisted = true;
+}
+
+void		Client::setUsrRegisted(void){
+	_usrRegisted = true;
+}
+
+void	Client::setPassRegisted(void){
+		_passRegisted = true;
+}
+
+void  Client::setUsr(std::string &usrname)
+{
+	_user = usrname;
+}
+
+void  Client::setPass(std::string &pass)
+{
+	_pass = pass;
+}
+
+void  Client::setHostname(std::string &hostname)
+{
+	_hostname = hostname;
+}
+
+void    Client::setIRCMode(std::string mode) {
+
+    this->_irc_mode = mode;
+}
+
+void	Client::setRealname(std::string &realname)
+{
+	_realname = realname;
 }
